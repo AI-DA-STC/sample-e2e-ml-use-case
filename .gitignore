@@ -6,6 +6,7 @@ conf/local/**
 conf/**/*credentials*
 
 # Ignore everything in the following folders
+data/**
 logs/**
 models/**
 storage
