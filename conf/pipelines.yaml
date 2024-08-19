@@ -1,0 +1,7 @@
+hydra:
+  job:
+    chdir: True
+
+process_data:
+  raw_data_dir_path: "/absolute/path/to/raw/data/dir"
+  processed_data_dir_path: "/absolute/path/to/processed/data/dir"
