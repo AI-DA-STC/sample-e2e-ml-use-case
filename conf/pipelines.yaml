@@ -13,11 +13,17 @@ train_model:
   no_mps: true
   train_bs: 64
   test_bs: 1000
-  lr: 1.0
+  lr: 0.01
   gamma: 0.7
   seed: 1111
-  epochs: 3
+  epochs: 5
   log_interval: 100
   dry_run: false
   model_checkpoint_interval: 2
   model_checkpoint_dir_path: "/path/to/model/checkpoint"
+
+batch_infer:
+  model_path: "/absolute/path/to/models/model-dir/model.pt"
+  input_data_dir: "/absolute/path/to/data/batch-infer-data-dir"
+  use_cuda: false
+  use_mps: false
