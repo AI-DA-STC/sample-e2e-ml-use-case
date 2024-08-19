@@ -2,11 +2,12 @@
 """
 
 import torch
+import mlflow
 
 import image_classifier as imgc
 
 
-def train(args, model, device, train_loader, optimiser, epoch, mlflow_init_status):
+def train(args, model, device, train_loader, optimiser, epoch):
     """Trains model.
 
     Parameters
@@ -23,9 +24,6 @@ def train(args, model, device, train_loader, optimiser, epoch, mlflow_init_statu
         Optimiser algorithm to be used for training.
     epoch : int
         Current epoch value.
-    mlflow_init_status : bool
-        Boolean value indicative of success of intialising connection
-        with MLflow server.
 
     Returns
     -------
@@ -53,18 +51,12 @@ def train(args, model, device, train_loader, optimiser, epoch, mlflow_init_statu
             if args["dry_run"]:
                 break
 
-    imgc.general_utils.mlflow_log(
-        mlflow_init_status,
-        "log_metric",
-        key="train_loss",
-        value=loss.item(),
-        step=epoch,
-    )
+    mlflow.log_metric("train_loss", loss.item(), step=epoch)
 
     return loss.item()
 
 
-def test(model, device, test_loader, epoch, mlflow_init_status):
+def test(model, device, test_loader, epoch):
     """Evaluate model on test dataset.
 
     Parameters
@@ -77,9 +69,6 @@ def test(model, device, test_loader, epoch, mlflow_init_status):
         Iterable that provides batches of data from the test dataset.
     epoch : int
         Current epoch value.
-    mlflow_init_status : bool
-        Boolean value indicative of success of intialising connection
-        with MLflow server.
 
     Returns
     -------
@@ -113,16 +102,8 @@ def test(model, device, test_loader, epoch, mlflow_init_status):
         )
     )
 
-    imgc.general_utils.mlflow_log(
-        mlflow_init_status, "log_metric", key="test_loss", value=test_loss, step=epoch
-    )
-    imgc.general_utils.mlflow_log(
-        mlflow_init_status,
-        "log_metric",
-        key="test_accuracy",
-        value=test_accuracy,
-        step=epoch,
-    )
+    mlflow.log_metric("test_loss", test_loss, step=epoch)
+    mlflow.log_metric("test_accuracy", test_accuracy, step=epoch)
 
     return test_loss, test_accuracy
 

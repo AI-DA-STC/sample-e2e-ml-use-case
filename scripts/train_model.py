@@ -36,18 +36,46 @@ def main(args):
         )
     )
 
-    mlflow_init_status, mlflow_run = imgc.general_utils.mlflow_init(
-        args, setup_mlflow=args["setup_mlflow"], autolog=args["mlflow_autolog"]
+    mlflow_envvars = [
+        "MLFLOW_TRACKING_URI",
+        "MLFLOW_TRACKING_USERNAME",
+        "MLFLOW_TRACKING_PASSWORD",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+    ]
+
+    missing_envvars = []
+    for envvar in mlflow_envvars:
+        if not envvar in os.environ:
+            missing_envvars.append(envvar)
+
+    if missing_envvars:
+        logger.error(
+            "Missing environment variables for MLflow Tracking: " + str(missing_envvars)
+        )
+        exit(1)
+
+    mlflow_tracking_uri = mlflow.get_tracking_uri()
+    mlflow.set_experiment(args["mlflow_exp_name"])
+    mlflow_experiment = mlflow.get_experiment_by_name(args["mlflow_exp_name"])
+
+    mlflow.start_run()
+    mlflow_run = mlflow.active_run()
+
+    logger.info(
+        "Logging experiment to MLflow Tracking server at %s", mlflow_tracking_uri
     )
-    imgc.general_utils.mlflow_log(
-        mlflow_init_status,
-        "log_params",
+    logger.info("MLflow experiment ID: %s", mlflow_experiment.experiment_id)
+    logger.info("UUID for MLflow run: %s", mlflow_run.info.run_id)
+    logger.info("Artifact location: %s", mlflow_experiment.artifact_location)
+
+    mlflow.log_params(
         params={
             "learning_rate": args["lr"],
             "gamma": args["gamma"],
             "seed": args["seed"],
             "epochs": args["epochs"],
-        },
+        }
     )
 
     torch.manual_seed(args["seed"])
@@ -84,10 +112,10 @@ def main(args):
 
     for epoch in range(1, args["epochs"] + 1):
         curr_train_loss = imgc.modeling.utils.train(
-            args, model, device, train_loader, optimiser, epoch, mlflow_init_status
+            args, model, device, train_loader, optimiser, epoch
         )
         curr_test_loss, curr_test_accuracy = imgc.modeling.utils.test(
-            model, device, test_loader, epoch, mlflow_init_status
+            model, device, test_loader, epoch
         )
 
         if epoch % args["model_checkpoint_interval"] == 0:
@@ -106,35 +134,26 @@ def main(args):
                 },
                 model_checkpoint_path,
             )
-            imgc.general_utils.mlflow_log(
-                mlflow_init_status,
-                "log_artifact",
-                local_path=model_checkpoint_path,
-                artifact_path="model",
-            )
+
+            mlflow.log_artifact(model_checkpoint_path, "model")
 
         scheduler.step()
 
-    imgc.general_utils.mlflow_log(
-        mlflow_init_status,
-        "log_dict",
+    mlflow.log_dict(
         dictionary=omegaconf.OmegaConf.to_container(args, resolve=True),
         artifact_file="train_model_config.json",
     )
 
-    if mlflow_init_status:
-        artifact_uri = mlflow.get_artifact_uri()
-        logger.info("Artifact URI: %s", artifact_uri)
-        imgc.general_utils.mlflow_log(
-            mlflow_init_status, "log_params", params={"artifact_uri": artifact_uri}
-        )
-        logger.info(
-            "Model training with MLflow run ID %s has completed.",
-            mlflow_run.info.run_id,
-        )
-        mlflow.end_run()
-    else:
-        logger.info("Model training has completed.")
+    artifact_uri = mlflow.get_artifact_uri()
+    logger.info("Artifact URI: %s", artifact_uri)
+    mlflow.log_params(params={"artifact_uri": artifact_uri})
+    logger.info(
+        "Model training with MLflow run ID %s has completed.",
+        mlflow_run.info.run_id,
+    )
+    mlflow.end_run()
+
+    logger.info("Model training has completed.")
 
     return curr_test_loss, curr_test_accuracy
 
