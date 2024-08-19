@@ -8,7 +8,7 @@ process_data:
 
 train_model:
   mlflow_exp_name: "experiment-01"
-  data_dir_path: "/path/to/processed/data/dir"
+  data_dir_path: "/absolute/path/to/processed/data/dir"
   no_cuda: true
   no_mps: true
   train_bs: 64
@@ -20,10 +20,10 @@ train_model:
   log_interval: 100
   dry_run: false
   model_checkpoint_interval: 2
-  model_checkpoint_dir_path: "/path/to/model/checkpoint"
+  model_checkpoint_dir_path: "/absolute/path/to/model/dir"
 
 batch_infer:
-  model_path: "/absolute/path/to/models/model-dir/model.pt"
+  model_path: "/absolute/path/to/models/model.pt"
   input_data_dir: "/absolute/path/to/data/batch-infer-data-dir"
   use_cuda: false
   use_mps: false
