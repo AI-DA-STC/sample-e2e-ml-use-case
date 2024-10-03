@@ -1,11 +1,12 @@
-"""This script processes raw MNIST images and saves them in the processed data directory.
+"""
+This script processes raw MNIST images and saves them in the processed data directory.
 """
 
 import os
 import sys
 import logging
-import hydra
 from pathlib import Path
+import hydra
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -16,7 +17,9 @@ import image_classifier as imgc
 # pylint: disable = no-value-for-parameter
 @hydra.main(version_base=None, config_path="../conf", config_name="pipelines.yaml")
 def main(args):
-    """This function processes raw MNIST images and saves them in the processed data directory.
+    """
+    This function processes raw MNIST images and saves them in the processed data
+    directory.
 
     Parameters
     ----------
