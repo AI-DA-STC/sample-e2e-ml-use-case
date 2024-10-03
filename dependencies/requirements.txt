@@ -10,3 +10,4 @@ black==24.8.0
 pandas==2.2.2
 jsonlines==4.0.0
 streamlit==1.37.1
+pylint==3.3.1
