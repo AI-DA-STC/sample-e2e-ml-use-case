@@ -7,7 +7,7 @@ import pandas as pd
 import torch.utils.data as torch_data
 import torchvision
 
-import image_classifier as imgc
+from . import datasets, transforms
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +45,17 @@ def transform_raw_dataset(raw_data_dir_path, processed_data_dir_path):
     anno_train_df : pd.DataFrame
         The annotation dataframe for the processed training dataset.
     test_df : pd.DataFrame or None
-        The annotation dataframe for the processed test dataset, or None if the test dataset is not present.
+        The annotation dataframe for the processed test dataset, or None if the test
+        dataset is not present.
     """
     dir_files = os.listdir(raw_data_dir_path)
     logger.info("Processing raw training data for directory: %s", raw_data_dir_path)
     anno_train_df = pd.read_csv(os.path.join(raw_data_dir_path, "train.csv"))
-    train_dataset = imgc.data_prep.datasets.MNISTDataset(
+    train_dataset = datasets.MNISTDataset(
         raw_data_dir_path,
         "train.csv",
         to_tensor=False,
-        transform=imgc.data_prep.transforms.MNIST_TRANSFORM_STEPS["train"],
+        transform=transforms.MNIST_TRANSFORM_STEPS["train"],
     )
     train_dataloader = torch_data.DataLoader(train_dataset)
 
@@ -64,11 +65,11 @@ def transform_raw_dataset(raw_data_dir_path, processed_data_dir_path):
     if "test.csv" in dir_files:
         logger.info("Processing raw test data for directory: %s", raw_data_dir_path)
         test_df = pd.read_csv(os.path.join(raw_data_dir_path, "test.csv"))
-        test_dataset = imgc.data_prep.datasets.MNISTDataset(
+        test_dataset = datasets.MNISTDataset(
             raw_data_dir_path,
             "test.csv",
             to_tensor=False,
-            transform=imgc.data_prep.transforms.MNIST_TRANSFORM_STEPS["test"],
+            transform=transforms.MNIST_TRANSFORM_STEPS["test"],
         )
         test_dataloader = torch_data.DataLoader(test_dataset)
         for batch in test_dataloader:

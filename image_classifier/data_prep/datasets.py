@@ -3,9 +3,9 @@
 
 import os
 import pandas as pd
+import torchvision
 from PIL import Image
 import torch.utils.data as torch_data
-import torchvision
 
 
 class MNISTDataset(torch_data.Dataset):
@@ -29,13 +29,13 @@ class MNISTDataset(torch_data.Dataset):
         to_grayscale : bool, optional
             Whether to convert the images to grayscale by default. Defaults to False.
         to_tensor : bool, optional
-            Whether to convert the images to PyTorch tensors by default. Defaults to False.
+            Whether to convert the images to PyTorch tensors by default.
+            Defaults to False.
         transform : callable, optional
             A PyTorch transform sequence to apply to the images. Defaults to None.
         """
         self.data_dir_path = data_dir_path
-        anno_file_path = os.path.join(data_dir_path, anno_file_name)
-        self.anno_df = pd.read_csv(anno_file_path)
+        self.anno_df = pd.read_csv(os.path.join(data_dir_path, anno_file_name))
         self.to_grayscale = to_grayscale
         self.to_tensor = to_tensor
         self.transform = transform
