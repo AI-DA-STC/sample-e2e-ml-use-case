@@ -1,0 +1,10 @@
+[MAIN]
+extension-pkg-whitelist=pydantic
+init-hook='import sys, os; sys.path.append(str(os.getcwd()))'
+
+[TYPECHECK]
+generated-members=torch.*
+
+[FORMAT]
+max-line-length = 88
+expected-line-ending-format=LF
