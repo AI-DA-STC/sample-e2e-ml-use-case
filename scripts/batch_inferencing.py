@@ -6,15 +6,15 @@ import sys
 import datetime
 import logging
 import glob
+from pathlib import Path
 import hydra
 import jsonlines
 import torchvision
 from PIL import Image
-from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-import image_classifier as imgc
+import image_classifier as imgc  # pylint: disable = wrong-import-position
 
 
 # pylint: disable = no-value-for-parameter

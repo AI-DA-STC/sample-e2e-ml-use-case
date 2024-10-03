@@ -11,7 +11,7 @@ import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-import image_classifier as imgc # pylint: disable = wrong-import-position
+import image_classifier as imgc  # pylint: disable = wrong-import-position
 
 
 # pylint: disable = no-value-for-parameter
