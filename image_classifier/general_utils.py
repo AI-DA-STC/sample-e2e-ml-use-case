@@ -111,7 +111,7 @@ def init_mlflow_run(args: dict) -> mlflow.tracking.MlflowClient:
     logger.info("UUID for MLflow run: %s", mlflow_run.info.run_id)
     logger.info("Artifact location: %s", mlflow_experiment.artifact_location)
 
-    return mlflow
+    return mlflow_run
 
 
 def get_accelerator_device(

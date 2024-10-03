@@ -4,7 +4,7 @@
 import torch
 import mlflow
 
-import image_classifier as imgc
+from . import models
 
 
 def train(args, model, device, train_loader, optimiser, epoch):
@@ -131,7 +131,7 @@ def load_model(path_to_model, use_cuda, use_mps):
         device = torch.device("mps")
     else:
         device = torch.device("cpu")
-    loaded_model = imgc.modeling.models.Net().to(device)
+    loaded_model = models.Net().to(device)
     checkpoint = torch.load(path_to_model)
     loaded_model.load_state_dict(checkpoint["model_state_dict"])
     return loaded_model, device

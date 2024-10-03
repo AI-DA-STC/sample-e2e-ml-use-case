@@ -5,26 +5,35 @@ This script is for training a model on the MNIST dataset.
 import os
 import sys
 import logging
+from pathlib import Path
 import omegaconf
 import hydra
 import mlflow
 import torch
-from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-import image_classifier as imgc
+import image_classifier as imgc # pylint: disable = wrong-import-position
 
 
 # pylint: disable = no-value-for-parameter
+# pylint: disable = too-many-locals
 @hydra.main(version_base=None, config_path="../conf", config_name="pipelines.yaml")
 def main(args):
-    """This is the main function for training the model.
+    """
+    Main function for training a model on the MNIST dataset.
 
     Parameters
     ----------
-    args : omegaconf.DictConfig
-        An omegaconf.DictConfig object containing arguments for the main function.
+    args : dict
+        A dictionary containing configuration options for the model training process.
+
+    Returns
+    -------
+    curr_test_loss : float
+        The test loss value achieved by the trained model.
+    curr_test_accuracy : float
+        The test accuracy value achieved by the trained model.
     """
     args = args["train_model"]
 
@@ -36,39 +45,7 @@ def main(args):
         )
     )
 
-    mlflow_envvars = [
-        "MLFLOW_TRACKING_URI",
-        "MLFLOW_TRACKING_USERNAME",
-        "MLFLOW_TRACKING_PASSWORD",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-    ]
-
-    missing_envvars = []
-    for envvar in mlflow_envvars:
-        if not envvar in os.environ:
-            missing_envvars.append(envvar)
-
-    if missing_envvars:
-        logger.error(
-            "Missing environment variables for MLflow Tracking: " + str(missing_envvars)
-        )
-        exit(1)
-
-    mlflow_tracking_uri = mlflow.get_tracking_uri()
-    mlflow.set_experiment(args["mlflow_exp_name"])
-    mlflow_experiment = mlflow.get_experiment_by_name(args["mlflow_exp_name"])
-
-    mlflow.start_run()
-    mlflow_run = mlflow.active_run()
-
-    logger.info(
-        "Logging experiment to MLflow Tracking server at %s", mlflow_tracking_uri
-    )
-    logger.info("MLflow experiment ID: %s", mlflow_experiment.experiment_id)
-    logger.info("UUID for MLflow run: %s", mlflow_run.info.run_id)
-    logger.info("Artifact location: %s", mlflow_experiment.artifact_location)
-
+    mlflow_run = imgc.general_utils.init_mlflow_run(args)
     mlflow.log_params(
         params={
             "learning_rate": args["lr"],
@@ -77,16 +54,8 @@ def main(args):
             "epochs": args["epochs"],
         }
     )
-
     torch.manual_seed(args["seed"])
-
-    use_cuda = not args["no_cuda"] and torch.cuda.is_available()
-    if use_cuda:
-        device = torch.device("cuda")
-    elif not args["no_mps"] and torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
+    use_cuda, device = imgc.general_utils.get_accelerator_device(args)
 
     train_kwargs = {"batch_size": args["train_bs"]}
     test_kwargs = {"batch_size": args["test_bs"]}
