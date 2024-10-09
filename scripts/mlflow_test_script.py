@@ -43,7 +43,7 @@ def main():
 
     print("Logging artifact...")
     # Create a text artifact and log it
-    dummy_text_content = "This text content should be uploaded to the ECS bucket."
+    dummy_text_content = "This text content should be uploaded to the MinIO bucket."
     with open("text_artifact.txt", "w", encoding="utf-8") as file:
         file.write(dummy_text_content)
     mlflow.log_artifact("text_artifact.txt")
@@ -52,6 +52,8 @@ def main():
     print("Current artifact URI: ", artifact_uri)
 
     mlflow.end_run()
+
+    print("Test script has run successfully!")
 
 
 if __name__ == "__main__":
