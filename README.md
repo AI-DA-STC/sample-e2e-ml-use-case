@@ -106,7 +106,7 @@ To observe the logged parameters and metrics, head over to the MLflow Tracking s
 
 While the dummy text artifact is viewable and downloadable through the MLflow interface, one can peruse relevant bucket which the artifact is uploaded to and observe the folder structure to better understand how MLflow handles such artifacts.
 
-> Screenshot here...
+![MinIO - Test Script Bucket Results](./docs/assets/images/screenshots/minio-mlflow-test-run-success.png)
 
 ## Data Processing
 
