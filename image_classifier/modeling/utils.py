@@ -3,8 +3,10 @@
 
 import torch
 import mlflow
+import omegaconf
 
 from . import models
+from .. import general_utils
 
 
 def train(args, model, device, train_loader, optimiser, epoch):
@@ -108,7 +110,7 @@ def test(model, device, test_loader, epoch):
     return test_loss, test_accuracy
 
 
-def load_model(path_to_model, use_cuda, use_mps):
+def load_model(path_to_model, use_cuda, use_mps, weights_only=False):
     """Load PyTorch model state dict.
 
     A sample utility function to be used for loading a PyTorch model.
@@ -125,13 +127,11 @@ def load_model(path_to_model, use_cuda, use_mps):
     device : `torch.device` object
         Device type to be used for whatever operation will be using this variable.
     """
-    if use_cuda and torch.cuda.is_available():
-        device = torch.device("cuda")
-    elif use_mps and torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
+    use_cuda, device = general_utils.get_accelerator_device(
+        omegaconf.DictConfig({"no_cuda": not use_cuda, "no_mps": not use_mps})
+    )
+
     loaded_model = models.Net().to(device)
-    checkpoint = torch.load(path_to_model)
+    checkpoint = torch.load(path_to_model, weights_only=weights_only)
     loaded_model.load_state_dict(checkpoint["model_state_dict"])
     return loaded_model, device
