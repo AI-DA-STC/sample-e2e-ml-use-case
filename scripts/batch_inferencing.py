@@ -20,12 +20,14 @@ import image_classifier as imgc  # pylint: disable = wrong-import-position
 # pylint: disable = no-value-for-parameter
 @hydra.main(version_base=None, config_path="../conf", config_name="pipelines.yaml")
 def main(args):
-    """This main function does the following:
-    - load logging config
-    - gets list of files to be loaded for inferencing
-    - loads trained model
-    - conducts inferencing on data
-    - outputs prediction results to a jsonline file
+    """
+    Script to conduct batch inferencing on a directory of images.
+    The script will load the model, and then iterate through the input image files,
+    conducting model inferencing on each. The results will be written to a `.jsonl` file
+    named `batch-infer-res.jsonl` in the current working directory.
+
+    The script will print out the location of the output result file once it has
+    completed.
     """
     args = args["batch_infer"]
 
@@ -38,7 +40,7 @@ def main(args):
 
     logger.info("Loading the model...")
     loaded_model, device = imgc.modeling.utils.load_model(
-        args["model_path"], args["use_cuda"], args["use_mps"]
+        args["model_path"], args["use_cuda"], args["use_mps"], weights_only=True
     )
 
     glob_expr = args["input_data_dir"] + "/*.png"
