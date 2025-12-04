@@ -39,22 +39,12 @@ From the steps above, the following objectives are to be met:
 
 ### Python Virtual Environment Manager
 
-Before we can execute the pipelines to follow, we have to set up the virtual environment that would contain the dependencies required by the package (and scripts) that we will be using. For this example, we will be using [`mamba`](https://mamba.readthedocs.io/en/latest). The `mamba` binary is obtained through [`microforge`](https://github.com/conda-forge/miniforge?tab=readme-ov-file#download).
+Before we can execute the pipelines to follow, we have to set up the virtual environment that would contain the dependencies required by the package (and scripts) that we will be using. For this example, we will be using [`uv`](https://docs.astral.sh/uv/getting-started/installation/).
 
-> __Note:__ The set of steps below is mostly relevant for when there isn't a Python virtual environment manager present on the development workspace you are working on.
-
-```bash
-$ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-$ chmod +x Miniforge3-Linux-x86_64.sh
-$ ./Miniforge3-Linux-x86_64.sh
-$ ~/miniforge3/bin/mamba init bash
-```
-
-After the commands above, initiate a new shell session, and let's create the virtual environment that will in turn install the required dependencies listed within the `dependencies` folder.
+With `uv` installed, let's create the virtual environment that will in turn install the required dependencies specified by the `requirements.txt` file within the `dependencies` folder.
 
 ```bash
-$ mamba env create -f dependencies/sample-e2e-ml-use-case-conda.yaml
-$ mamba activate sample-e2e-ml-use-case
+$ uv add -r dependencies/requirements.txt
 ```
 
 ### Credentials & Environment Variables
@@ -113,7 +103,7 @@ While the dummy text artifact is viewable and downloadable through the MLflow in
 Now, let's download the raw data required for this use case.
 
 ```bash
-$ wget https://ryzalkdev.blob.core.windows.net/ryzal-pub-misc/mnist-pngs-data.zip -P data
+$ wget https://storage.googleapis.com/ste-gto-stc-aida-pub/datasets/mnist-pngs-data.zip -P data
 # following 2 lines are for Linux systems mainly
 $ sudo apt update
 $ sudo apt install unzip
@@ -142,7 +132,7 @@ python scripts/train_model.py \
 Now that we have a trained model, let's test the model out by loading it and conducting batched inferencing on a new set of unseen data. This new set of data can be downloaded like so:
 
 ```bash
-$ wget https://ryzalkdev.blob.core.windows.net/ryzal-pub-misc/batched-mnist-input-data.zip -P data
+$ wget https://storage.googleapis.com/ste-gto-stc-aida-pub/datasets/batched-mnist-input-data.zip -P data
 $ unzip data/batched-mnist-input-data.zip -d data
 ```
 
