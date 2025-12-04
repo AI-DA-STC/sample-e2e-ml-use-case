@@ -47,6 +47,12 @@ With `uv` installed, let's create the virtual environment that will in turn inst
 $ uv add -r dependencies/requirements.txt
 ```
 
+To activate the virtual environment:
+
+```bash
+$ source .venv/bin/activate
+```
+
 ### Credentials & Environment Variables
 
 Most of the scripts require values (i.e. credentials) to be derived from environment variables that would be set by you. These values are unique to each user, but a sample `.env` file collating these environment variables exists in this repo that can be use as a reference, and then exported within a running shell session:
